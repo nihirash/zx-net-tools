@@ -2,8 +2,8 @@
 
 ## Requirements
 
-For running you need:
- * ZX-Uno(or compatible) zx-spectrum clone with UART core
+For running this version you need:
+ * Zx-spectrum 128k(or clone) with Wifi addon connected to AY-3-8912
  * Stored WiFi creds via [.iwconfig](https://github.com/antoniovillena/zxuno/tree/master/software/iwconfig) utility.
 
 For development you need only sjasmplus. 
