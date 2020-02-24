@@ -511,6 +511,11 @@ rstLp:
     call okErrCmd
     and 1
     jp z, _errInit
+
+    ld hl, cmd_mode
+    call okErrCmd
+    and 1
+    jp z, _errInit
     
     ld hl, cmd_cwqap ; Lets disconnect from last AP
     call okErrCmd
