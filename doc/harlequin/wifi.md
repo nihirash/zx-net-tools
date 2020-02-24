@@ -22,7 +22,7 @@ You'll need two 1 kilooms resistors and ESP-12 module.
 
 If you've installed resistor on prev. step(from AY to ESP header) - you need remove resistor from CTS pin. 
 
-![Schematics](schematics.pngs)
+![Schematics](schematics.png)
 
 You've soldered it? Ok. Make pin-connector to harlequin's board.
 
