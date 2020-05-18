@@ -11,6 +11,10 @@ spectranet: *.asm font.bin
 	sjasmplus -DSPECTRANET main.asm
 	scp ugoph.bin root@nihirash.net:/var/tnfs/ugoph.bin
 
+spectranet48: *.asm font.bin
+	sjasmplus -DSPECTRANET -DZX48 main.asm
+	scp ugoph.bin root@nihirash.net:/var/tnfs/ugoph48.bin
+
 zxuno: *.asm font.bin
 	sjasmplus -DESXDOS -DUNO -DTIMEXSCR main.asm
 

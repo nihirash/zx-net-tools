@@ -2,10 +2,14 @@ showPage:
     xor a : ld (show_offset), a, (s_half), a
     inc a :ld (cursor_pos), a
 backToPage:    
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
     call renderScreen : call showCursor
 showLp:
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
 controls:
     xor a : ld (s_show_flag), a
 
@@ -117,9 +121,9 @@ dfl:
     ld hl, iBuff : call showTypePrint
 
     ld hl, server_buffer : ld de, file_buffer : ld bc, port_buffer : call makeRequest
-    
+    IFNDEF ZX48
     xor a : call changeBank
-
+    ENDIF
     ld hl, iBuff : call downloadData
 
     call hideCursor : call showCursor
@@ -135,15 +139,18 @@ isOpenable:
 
 imgExt	db ".scr", 0
 imgExt2 db ".SCR", 0
+    IFNDEF ZX48
 pt3Ext  db ".pt3", 0
 pt3Ext2 db ".PT3", 0
 pt2Ext  db ".pt2", 0
 pt2Ext2 db ".PT2", 0
+    ENDIF
 
 checkFile:
 ;; Images
 	ld hl, imgExt  : call searchRing : cp 1 : jr z, loadImage
 	ld hl, imgExt2 : call searchRing : cp 1 : jr z, loadImage
+    IFNDEF ZX48
 ;; Music
     xor a: ld (#400A), a
 
@@ -154,13 +161,19 @@ checkFile:
 
     ld hl, pt2Ext2 : call searchRing : cp 1 : jr z, playMusic
     ld hl, pt2Ext  : call searchRing : cp 1 : jr z, playMusic
-
+    ENDIF
 	jp dfl
 loadImage:
 	ld hl, server_buffer : ld de, file_buffer : ld bc, port_buffer : call makeRequest
 	
+    IFNDEF ZX48
     ld a, 7 : call changeBank
-    ld hl, #c000 : call loadData
+    ld hl, #c000
+    ELSE 
+    ld hl, #4000
+    ENDIF
+    
+    call loadData
     
     xor a 
     
@@ -179,7 +192,9 @@ wK2:
     call inkey  
     or a   : jr z, wKey
     cp 's' : jr z, toggleSS
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
 	jp backToPage
 
 toggleSS:
@@ -187,11 +202,12 @@ toggleSS:
     and a : jp nz, startNext
     jp backToPage
 
+    IFNDEF ZX48
 playMusic:
     ld hl, hist : ld de, path : ld bc, 322 : ldir
 
     ld hl, (show_offset) : ld (offset_tmp), hl
-
+    
     xor a : call changeBank 
     ld hl, server_buffer : ld de, file_buffer : ld bc, port_buffer : call openPage
 
@@ -210,10 +226,11 @@ songEnded:
     IFNDEF SPECTRANET
     call uartBegin
     ENDIF
-    
+
     ld hl, server : ld de, path : ld bc, port : call openPage
     
     ld hl, (offset_tmp) : ld (show_offset), hl
+    ENDIF 
 startNext:
     ld a, (cursor_pos) : inc a : cp 21 : jr z, playNxtPg : ld (cursor_pos), a
 
@@ -222,9 +239,11 @@ playNxtPg:
     ld a, (show_offset) : add 20 : ld (show_offset), a : ld a, 1 : ld (cursor_pos), a
 playContinue:
     call renderScreen : call showCursor
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
     jp selectItem
-
+    IFNDEF ZX48
 stopPlay:
     call #4008
 
@@ -236,6 +255,7 @@ stopPlay:
     ld hl, (offset_tmp) : ld (show_offset), hl
 
     jp backToPage
+    ENDIF
 
 findFnme:
     push hl : pop de
@@ -411,9 +431,12 @@ s_show_flag     db  0
 offset_tmp      dw  0
 show_offset     db  0
 cursor_pos      db  1
-
+    IFNDEF ZX48
 head      db " UGophy - ZX-128 Gopher client v. 1.0  (c) Alexander Sharikhin ", 13,0
+    ELSE
+head      db " UGophy - ZX-48 Gopher client v. 1.0   (c) Alexander Sharikhin ", 13,0
 
+    ENDIF
 cleanLine db "                                                                ",0
 playing   db "Playing... Hold <SPACE> to stop!", 0
 type_inpt db "User input: ", 0

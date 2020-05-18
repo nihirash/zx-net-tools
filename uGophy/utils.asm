@@ -1,5 +1,5 @@
 bankm	equ 23388
-
+    IFNDEF ZX48
 ; This routine checks availability of extended(128K) memory.
 ; Output: 
 ; Flag: Z - High memory available 
@@ -13,6 +13,7 @@ checkHighMem:
 changeBank:
     ld bc, #7ffd : or #18 : out (c), a : ld (bankm), a
     ret
+    ENDIF
 
     IFNDEF SPECTRANET 
 ; Pushes to UART zero-terminated string

@@ -5,9 +5,9 @@ reRenderText:
     call renderTextScreen
 showTxLp:
     call txControls
-    
+    IFNDEF ZX48
     xor a : call changeBank
-    
+    ENDIF
     dup 5
     halt
     edup

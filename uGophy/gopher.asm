@@ -3,14 +3,17 @@
 ; bc - port
 openPage:
     ld (srv_ptr), hl : ld (path_ptr), de : ld (port_ptr), bc
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
 
     ex hl, de : ld de, hist : ld bc, 322 : ldir
 
     ld hl, (srv_ptr) : ld de, (path_ptr) : ld bc, (port_ptr)
     call makeRequest
-
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
     ld hl, page_buffer : xor a : ld (hl), a :  ld de, page_buffer + 1 : ld bc, #ffff - page_buffer - 1 : ldir
 
     ld hl, page_buffer : call loadData
@@ -30,8 +33,10 @@ makeRequest:
     ld (srv_ptr), hl : ld (path_ptr), de : ld (port_ptr), bc
 
     ld hl, downloading_msg : call showTypePrint
-
+    IFNDEF ZX48
     xor a : call changeBank
+    ENDIF
+
     IFDEF SPECTRANET
     ; SPECTRANET PART GOING HERE!!!!!!!!!!!!!!!!!!!!!
     ld de, (port_ptr) : call atoi : ld b, h, c, l, hl, (srv_ptr) 
@@ -95,7 +100,7 @@ lpLoop:
     add hl, de
     ;DISPLAY "debug: ", $
 
-    ld a, h : cp HIGH page_buffer : jr c, lpLoop 
+    ld a, h : cp #40 : jr c, lpLoop 
 ; a bit buggy 
 
     ld bc, (bytes_avail) : ld hl, output_buffer : ldir
