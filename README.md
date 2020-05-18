@@ -1,4 +1,4 @@
-# Network tools for ANY ZX Spectrum 128K with ESP-12 chip connected to AY
+# Network tools for ANY ZX Spectrum 128K with ESP-12 chip connected to AY and ZX-Uno
 
 How to connect WiFi chip to harlequin 128K you may read [here](https://github.com/nihirash/zx-net-tools/blob/master/doc/harlequin/wifi.md)
 

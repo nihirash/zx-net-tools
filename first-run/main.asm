@@ -33,6 +33,7 @@ uartBegin:
     ld a, #0e
     ld bc, #fffd
     out (c), a
+    
     ld a, #fe
     ld b, #bf
     out (c), a ; Make CTS low
@@ -53,3 +54,4 @@ hello   db "Trying change speed of ESP-12", 13
 done    db "Command sent", 13
         db "You should test it", 13, 0
     savetap "setSpeed.tap", start
+    savebin "setSpeed.bin", start, $ - start

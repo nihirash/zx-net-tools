@@ -106,8 +106,18 @@ firstPacket:
 	call performRequest
 
 skipHeaders:
-	ld de, output_buffer
-	ld bc, 0
+	ld de, output_buffer, bc, 0
+.loop
+	ld a, (de)
+	inc bc
+	inc de
+	cp ' '
+	jr nz, .loop
+
+	ld a,(de)
+	cp '2'
+	jp nz, httpError
+	inc de : inc bc
 shLp:
 	ld a, (de)
 	push de
@@ -132,21 +142,52 @@ shLp:
     ldir
 	ret
 
+httpError:
+	ld hl, wrong_response_status : call putStringZ
+	ld hl, output_buffer
+.loop
+	ld a, (hl)
+	cp 13 : jr z, .exit
+	push hl
+	call putC
+	pop hl 
+	inc hl
+	jr .loop
+.exit
+	ld hl, cmd_close
+	call uartWriteStringZ
+	
+	ld hl, cmd_rst
+    call uartWriteStringZ
+.rstLp
+    call uartReadBlocking
+    call pushRing
+    ld hl, response_rdy
+    call searchRing
+    cp 1
+    jr nz, .rstLp     
+
+	pop af : xor a : ei : ret 
 
 performRequest: 
     ld hl, cmd_conn2site
     call okErrCmd
     cp 1
     jr z, zg_ok
-    ld hl, cmd_close
-    call okErrCmd
-    jr performRequest
+	; Failed connect
+	ld hl, failed_connect
+	call putStringZ
+	ld de, (retAddr)
+    push de    
+	xor a
+	ret	
+
 zg_ok:
     ld hl, cmd_cipsend
     call okErrCmd
 guLp:
     call uartReadBlocking
-    call pushRing
+	call pushRing
     ld hl, send_prompt
     call searchRing
     cp 1
@@ -154,6 +195,10 @@ guLp:
     ld hl, modem_command
     call okErrCmd
 	jp getPacket
+
+failed_connect	db 13, "Failed connect to host",0
+wrong_response_status db 13, "Response: ", 0
+
 
 create_link_suffix
 		db    #22,",80",13,10,0

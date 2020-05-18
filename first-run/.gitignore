@@ -1,3 +1,4 @@
 *.tap
+*.bin
 data.asm
 makedata

@@ -16,14 +16,13 @@ Start:
         jr z, noArgs
         call loadArgs
 
-        call uartBegin
-        call initWifi
-        ld hl, url
-        call httpGet
+        ld hl, initUart      : call putStringZ : call uartBegin
+        ld hl, connecting    : call putStringZ : call initWifi
+        ld hl, makingRequest : call putStringZ : ld hl, proto : call putStringZ 
 
-        ld hl, fout
-        ld b, FMODE_CREATE
-        call fopen
+        ld hl, proto : call httpGet
+
+        ld hl, fout, b, FMODE_CREATE : call fopen
         ld (fpointer), a
         ld hl, downloading : call putStringZ
 downloop:
@@ -106,10 +105,23 @@ putStringZ:
     inc hl
     jr putStringZ
 
+uartWriteStringZ:
+    ld a, (hl)
+    and a : ret z
+    push hl
+    call uartWriteByte
+    pop hl
+    inc hl 
+    jr uartWriteStringZ
+
 about:      defb 'wGet v.0.3 (c) 2020 Nihirash', 13, 0
 usage:      defb 'Usage: .wget <url> <outputfile>', 13, 0
+initUart    defb "Initializing UART", 13, 0
+connecting  defb "Connecting to WiFi", 13, 0
+makingRequest defb "Making request: ", 13, 0
 downloading defb 'Downloading', 0
 done:       defb 13, 'File saved', 13, 0
+proto       db "http://"
 url         defs 255 ; 0xd ending is important! Be carefull!
 fout        defs 80
 test_params defb '1 2 3',0
@@ -117,7 +129,14 @@ fpointer    defb 0
 retAddr     defw 0
 
 conclosed db 13, 13, "Connection closed", 0
-    include "uart.asm"
+    IFDEF UNO
+    include "uno-uart.asm"
+    ENDIF
+
+    IFDEF AY
+    include "ay-uart.asm"
+    ENDIF
+
     include "wifi.asm"
     include "ring.asm"
     include "http.asm"
