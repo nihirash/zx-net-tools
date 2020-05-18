@@ -48,6 +48,19 @@ skipHalf64:
     dec b
     jr .loop
 
+skipHalf64T:
+    ld b, 63
+.loop
+    xor a : or b : ret z 
+    ld a, (hl)
+    and a : ret z
+    cp 13 : ret z
+    cp 10 : ret z 
+    inc hl
+    dec b
+    jr .loop
+
+
 printT64:
 	ld b, 63
 ptlp:
@@ -66,16 +79,19 @@ ptlp:
 	jr ptlp
 
 printL64:
+    ld b, 63
+.loop
+    xor a : or b : ret z
 	ld a, (hl)
 	
 	and a : ret z
 	cp #0A : ret z
 	cp #0D : ret z
 
-	push hl : call putC : pop hl
-    
+	push hl, bc : call putC : pop bc, hl
+    dec b 
     inc hl
-	jr printL64
+	jr .loop
 
 ; HL - string
 ; Return: bc - len
