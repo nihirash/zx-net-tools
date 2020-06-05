@@ -183,7 +183,7 @@ bytes_avail	  defw 0
 sbyte_buff     defb 0, 0 
 
 send_prompt defb ">",0
-output_buffer defs 2048 ; buffer for downloading data
+output_buffer defs 4096 ; buffer for downloading data
 
 ; WiFi configuration
     IFDEF PLUS3DOS

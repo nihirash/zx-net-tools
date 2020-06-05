@@ -97,15 +97,6 @@ transmitNext:
 
 
 uartRead:
-    ld hl, _testByte
-    ld a, (hl)
-    and a
-    jr z, testSecond
-    inc hl
-    ld a, (hl)
-    scf 
-    ret
-testSecond:
     ld hl, _isSecondByteAvail
     ld a, (hl)
     and a 

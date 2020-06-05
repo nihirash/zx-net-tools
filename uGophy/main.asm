@@ -30,6 +30,7 @@ stack_pointer = $ - 1
     ENDIF
 zx48start:
     ld sp, stack_pointer
+    xor a : ld (#5c6a), a  ; Thank you, Mario Prato, for feedback
     ei
 
     call renderHeader
@@ -100,7 +101,7 @@ wsLp  halt : djnz wsLp
     
 open_lbl db 'Opening connection to ', 0
 
-path    db '/ncmenu'
+path    db '/uhello'
         defs 248              
 server  db 'nihirash.net'
         defs 58    
