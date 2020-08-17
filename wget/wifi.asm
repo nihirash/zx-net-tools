@@ -2,24 +2,15 @@
 initWifi:
     call loadWiFiConfig
     
-    ld bc, #ff
-intLp1:
-    push bc
-    ld b, #ff
-    djnz $
-    pop bc
-    djnz intLp1
-    
-
     ld hl, cmd_plus
     call uartWriteStringZ
     ld b,#ff
-wlp:
+.loop:
     push bc
     ld b, #ff
     djnz $
     pop bc
-    djnz wlp
+    djnz .loop
 
     ld hl, cmd_rst
     call uartWriteStringZ
