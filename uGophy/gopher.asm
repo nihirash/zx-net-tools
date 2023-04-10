@@ -129,6 +129,11 @@ downloadData:
     ld b, FMODE_CREATE : call fopen : ld (fstream), a
     ENDIF
 
+    IFDEF TRDOS
+    ld l, Dos.FA_CREATE_ALWAYS | Dos.FA_WRITE | Dos.FA_READ
+    call Dos.fopen
+    ENDIF
+
     IFNDEF SPECTRANET
 dwnLp:
     call getPacket : ld a, (connectionOpen) : and a : jp z, dwnEnd
@@ -141,6 +146,11 @@ dwnLp:
     ld bc, (bytes_avail), hl, output_buffer, a, (fstream) : call fwrite
     ENDIF
 
+    IFDEF TRDOS
+    ld hl, (bytes_avail) : ex hl, de : ld bc, output_buffer 
+    call Dos.fwrite
+    ENDIF
+
     jp dwnLp
 dwnEnd:
     
@@ -150,6 +160,10 @@ dwnEnd:
 
     IFDEF ESXDOS
     ld a, (fstream) : call fclose
+    ENDIF
+
+    IFDEF TRDOS
+    call Dos.fclose
     ENDIF
 
     ei

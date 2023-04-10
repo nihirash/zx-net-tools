@@ -124,7 +124,12 @@ dfl:
     IFNDEF ZX48
     xor a : call changeBank
     ENDIF
+
+    IFDEF TRDOS
+    ld bc, iBuff : call downloadData
+    ELSE
     ld hl, iBuff : call downloadData
+    ENDIF
 
     call hideCursor : call showCursor
 

@@ -46,8 +46,12 @@ Basic=1
 
 ;Call MUTE or INIT one more time to mute sound after stopping
 ;playing 
-
+    IFDEF TRDOS
+	device zxspectrum48	
+	ORG #4000
+    ELSE
 	DISP #4000
+    ENDIF
 
 ;Test codes (commented)
 ;	LD A,32 ;SinglePT3(TS if TSPT3.7),ABC,Looped
@@ -1678,3 +1682,7 @@ MDLADDR EQU $
 ;Code block #908 bytes
 ;Variables #2BF bytes (can be stripped)
 ;Total size #908+#2BF=#BC7 (3015) bytes
+    IFDEF TRDOS
+	savebin "player.bin",#4000, $ - #4000
+    ENDIF
+

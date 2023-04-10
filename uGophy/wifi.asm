@@ -1,5 +1,20 @@
 ; Initialize WiFi chip and connect to WiFi
 initWifi:
+    IFDEF TRDOS
+
+    call uartBegin
+    
+; Disable ECHO. BTW Basic UART test
+    ld hl, cmd_at : call okErrCmd : and 1 : jr z, errInit
+; Single connection mode 
+    ld hl, cmd_cmux : call okErrCmd : and 1 : jr z, errInit
+    
+; FTP enables this info? We doesn't need it :-)
+    ld hl, cmd_inf_off : call okErrCmd : and 1 : jr z, errInit
+
+    ret
+    ELSE
+
     call loadWiFiConfig
     ld hl, connectTo : call putStringZ 
     call uartBegin
@@ -36,6 +51,7 @@ rstLp:
     
     ld hl, log_ok : call putStringZ
     ret
+    ENDIF
 errInit
     ld hl, log_err : call putStringZ
     jr $
