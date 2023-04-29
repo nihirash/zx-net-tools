@@ -6,7 +6,9 @@ all:
 	@echo "make plus3dos - to make +3/+3e version Spectrum 128 with ESP-12 on AY"
 	@echo "make esxdos - to make esxDOS version Spectrum 128 with ESP-12 on AY"
 	@echo "make spectranet - to make Spectranet version"
-	@echo "make karabas-pro - to make TR-DOS version for karabas-pro with Timex-hires mode enabled"
+	@echo "make karabaspro-timex - to make TR-DOS version for karabas-pro with Timex-hires mode enabled"
+	@echo "make karabaspro-zifi - to make TR-DOS version for karabas-pro with ZIFI"
+	@echo "make karabaspro - to make TR-DOS version for karabas-pro"
 
 
 player.bin:
@@ -20,8 +22,14 @@ spectranet48: *.asm font.bin
 	sjasmplus -DSPECTRANET -DZX48 main.asm
 	scp ugoph.bin root@nihirash.net:/var/tnfs/ugoph48.bin
 
-karabas-pro: *.asm font.bin player.bin
+karabaspro-timex: *.asm font.bin player.bin
 	sjasmplus -DTRDOS -DUNO -DTIMEXSCR main.asm
+
+karabaspro: *.asm font.bin player.bin
+	sjasmplus -DTRDOS -DUNO main.asm
+
+karabaspro-zifi: *.asm font.bin player.bin
+	sjasmplus -DTRDOS -DZIFI main.asm
 
 zxuno: *.asm font.bin
 	sjasmplus -DESXDOS -DUNO -DTIMEXSCR main.asm

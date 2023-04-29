@@ -186,6 +186,10 @@ loadImage:
     out (#ff), a
     ENDIF
 
+    IFDEF ZIFI
+    out (#ff), a
+    ENDIF
+
     out (#fe), a
 
     ld b, 255
