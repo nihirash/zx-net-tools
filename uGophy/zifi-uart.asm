@@ -17,13 +17,18 @@ ZIFI_CMD_API_VERSION = #FF
 uartBegin:
     ld bc, ZIFI_CMD_REG : ld a, ZIFI_CMD_API_ENABLE : out (c), a
     ld bc, ZIFI_CMD_REG : ld a, ZIFI_CMD_CLEAR_FIFO_BOTH : out (c), a
-    ld b, #ff
-.loop
-    push bc
-    call uartRead
-    pop bc
-    djnz .loop    
+    ld bc, ZIFI_CMD_REG : ld a, ZIFI_CMD_API_VERSION : out (c), a
+    ld bc, ZIFI_ERR_REG : in a, (c)
+    cp 255
+    jp nz, retUartBegin
 
+haltUartBegin:
+    ld hl, nozifi_msg : call showTypePrint
+    jp uartBegin
+
+retUartBegin:
+    ld hl, zifi_api_msg : call showTypePrint
+    ld b, #ff
     ret
 
 ; Blocking read one byte
@@ -38,7 +43,6 @@ urb:
 ; Write single byte to UART
 ; A - byte to write
 ; BC will be wasted
-; TODO: check input fifo is not full
 uartWriteByte:
     push af
     ld bc, ZIFI_DATA_REG : out (c), a
@@ -52,14 +56,18 @@ uartWriteByte:
 ;     0 - Nothing to read
 uartRead:
     ld bc, ZIFI_FIFO_IN : in a, (c)
-    jr nz, retReadByte
+    cp 0
+    jp nz, retReadByte
 
+noData:
+    xor a
     ld b, 0
     ret
 
 retReadByte:
     ld bc, ZIFI_DATA_REG : in a, (c)
-
     ld b, 1
     ret
 
+nozifi_msg db 'ZiFi hardware is not available...', 0
+zifi_api_msg db 'ZiFi API available...', 0
