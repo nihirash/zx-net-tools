@@ -183,4 +183,7 @@ eop equ $
     SAVETAP "ugoph.tap", Start
 
     SAVEHOB "ugoph.$c", "ugoph.C", Start, $ - Start
-    
+
+    IFDEF DEBUG
+    SAVESNA "ugoph.sna", Start
+    ENDIF

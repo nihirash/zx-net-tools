@@ -173,6 +173,9 @@ loadImage:
 	
     IFNDEF ZX48
     ld a, 7 : call changeBank
+    IFDEF PROFISCR
+    xor a : call changeBankHiSpectrum
+    ENDIF
     ld hl, #c000
     ELSE 
     ld hl, #4000
