@@ -129,6 +129,9 @@ clearScreen:
     xor a
     call changeBankHiProfi
 
+    ld a, #ff ; black border (inversed on profi screen)
+    out (#fe), a
+
     di
     ld	hl,0
     ld	d,h

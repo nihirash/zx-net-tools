@@ -349,6 +349,10 @@ renderHeader:
     ld d,0 : call inverseLine
     ENDIF
 
+    IFDEF PROFISCR
+    ld d,0 : call inverseLine
+    ENDIF
+
     ld a, #07
     ld (attr_screen), a
     ret
