@@ -38,13 +38,13 @@ txUp:
     ld a, (show_offset)
     and a : ret z
 
-    sub 20 : ld (show_offset), a
+    sub SCREEN_ROWS : ld (show_offset), a
     call renderTextScreen
     ret
 
 txDn:
     ld a, (show_offset) 
-    add 20 : ld (show_offset), a
+    add SCREEN_ROWS : ld (show_offset), a
 
     call renderTextScreen
     ret
@@ -52,11 +52,11 @@ txDn:
 renderTextScreen:
     DISPLAY "renderTextScreen: ", $
     call renderHeader
-    ld b, 20
+    ld b, SCREEN_ROWS
 .loop
     push bc
     
-    ld a, 20 : sub b : ld b, a : ld a, (show_offset) : add b : ld b, a 
+    ld a, SCREEN_ROWS : sub b : ld b, a : ld a, (show_offset) : add b : ld b, a 
     call renderTextLine
     
     pop bc

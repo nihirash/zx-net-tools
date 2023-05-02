@@ -1,5 +1,7 @@
 ; Timex screen routines
 
+SCREEN_ROWS = 20
+
 showCursor:
 hideCursor:
     call showType

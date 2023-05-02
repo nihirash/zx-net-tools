@@ -7,6 +7,8 @@
 ; putC
 ; gotoXY
 
+SCREEN_ROWS = 28
+
 showCursor:
 hideCursor:
     call showType
@@ -71,7 +73,6 @@ putC:
 	push bc
 
     ld a, 6
-    ld b, #80
     call changeBank
 
 	call findAddr
@@ -135,7 +136,7 @@ clearScreen:
     ld	b,h
     ld	c,b
     add	hl,sp
-    ld	sp,#c000 + 7680
+    ld	sp,#c000 + 8192
 clgloop
 	push	de
     push	de
@@ -155,11 +156,12 @@ clgloop
     push	de
     push	de
     push	de
+    push	de
 
     djnz	clgloop
 
     ld	b,c
-    ld	sp,#e000 + 7680
+    ld	sp,#e000 + 8192
 clgloop2:
     push	de
     push	de
@@ -179,6 +181,7 @@ clgloop2:
     push	de
     push	de
     push	de
+    push	de
 
     djnz	clgloop2
 
@@ -192,12 +195,11 @@ clgloop2:
     ld a, 7
     call changeBankHiProfi
 
-claloop:
     ld a, #47 ; white bright on black
     ld hl, #c000
-    ld b, 192+24
+    ld b, 128
 claloop1:
-    ld c, 32
+    ld c, 64
 claloop2:
     ld (hl),a
     inc hl 
@@ -206,19 +208,18 @@ claloop2:
     dec b 
     jp nz, claloop1
 
-claloop3:
     ld a, #47
     ld hl, #e000 
-    ld b, 192+24
+    ld b, 128
+claloop3:
+    ld c, 64
 claloop4:
-    ld c, 32
-claloop5:
     ld (hl), a
     inc hl
     dec c 
-    jp nz, claloop5
-    dec b
     jp nz, claloop4
+    dec b
+    jp nz, claloop3
 
     xor a
     call changeBank

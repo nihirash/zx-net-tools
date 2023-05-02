@@ -5,6 +5,8 @@
 ; putC
 ; gotoXY
 
+SCREEN_ROWS = 20
+
 clearScreen:
 	IFNDEF ZX48
     ld a, 7 : call changeBank
