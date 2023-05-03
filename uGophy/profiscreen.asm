@@ -124,105 +124,55 @@ fa1:
 
 clearScreen:
 
-    ld a, 6
-    call changeBank
-    xor a
-    call changeBankHiProfi
-
-    ld a, #ff ; black border (inversed on profi screen)
-    out (#fe), a
+    ld a, 6 : call changeBank ; RAM06
+    xor a : call changeBankHiProfi
+    ld a, #ff : out (#fe), a ; black border (inversed on profi screen)
 
     di
-    ld	hl,0
-    ld	d,h
-    ld	e,h
-    ld	b,h
-    ld	c,b
+    ld hl,0 : ld d,h : ld e,h : ld b,h :ld c,b
     add	hl,sp
-    ld	sp,#c000 + 8192
+    ld	sp,#c000 + 8192 ; profi pixels even
 clgloop
+    DUP 16
 	push	de
-    push	de
-    push	de
-    push	de
+    EDUP
+    djnz	clgloop ; 256 times
 
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    djnz	clgloop
-
-    ld	b,c
-    ld	sp,#e000 + 8192
+    ld	b,c ; 0
+    ld	sp,#e000 + 8192 ; profi pixels odd
 clgloop2:
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    djnz	clgloop2
+    DUP 16
+	push	de
+    EDUP
+    djnz	clgloop2 ; 256 times
 
     ld	sp,hl
 
-; set profi attributes white ink / black screen
-
+    ; profi screen attributes
     ; RAM 3A = 111 dffd, 010 7ffd
     ld a, 2
     call changeBank
     ld a, 7
     call changeBankHiProfi
 
-    ld a, #47 ; white bright on black
-    ld hl, #c000
-    ld b, 128
-claloop1:
-    ld c, 64
-claloop2:
-    ld (hl),a
-    inc hl 
-    dec c 
-    jp nz, claloop2
-    dec b 
-    jp nz, claloop1
+    ld hl,0 : ld d,#47 : ld e,#47 : ld b,h :ld c,b ; #47 = white on black
+    add	hl,sp
+    ld sp, #c000 + 8192 ; profi attr even
+claloop
+    DUP 16
+	push	de
+    EDUP
+    djnz	claloop ; 256 times
 
-    ld a, #47
-    ld hl, #e000 
-    ld b, 128
-claloop3:
-    ld c, 64
-claloop4:
-    ld (hl), a
-    inc hl
-    dec c 
-    jp nz, claloop4
-    dec b
-    jp nz, claloop3
+    ld	b,c ; 0
+    ld	sp,#e000 + 8192 ; profi attr odd
+claloop2:
+    DUP 16
+	push	de
+    EDUP
+    djnz	claloop2 ; 256 times
+
+    ld	sp,hl
 
     xor a
     call changeBank
