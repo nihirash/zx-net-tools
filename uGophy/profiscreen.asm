@@ -131,53 +131,30 @@ clearScreen:
     di
     ld hl,0 : ld d,h : ld e,h : ld b,h :ld c,b
     add	hl,sp
-    ld	sp,#c000 + 8192 ; profi pixels even
+    ld	sp, 0 ; #c000 + 16384 ; profi pixels (both banks)
 clgloop
-    DUP 16
+    DUP 32
 	push	de
     EDUP
     djnz	clgloop ; 256 times
-
-    ld	b,c ; 0
-    ld	sp,#e000 + 8192 ; profi pixels odd
-clgloop2:
-    DUP 16
-	push	de
-    EDUP
-    djnz	clgloop2 ; 256 times
-
     ld	sp,hl
 
-    ; profi screen attributes
     ; RAM 3A = 111 dffd, 010 7ffd
-    ld a, 2
-    call changeBank
-    ld a, 7
-    call changeBankHiProfi
+    ld a, 2 : call changeBank
+    ld a, 7 :call changeBankHiProfi
 
     ld hl,0 : ld d,#47 : ld e,#47 : ld b,h :ld c,b ; #47 = white on black
     add	hl,sp
-    ld sp, #c000 + 8192 ; profi attr even
+    ld sp, 0 ; #c000 + 16384 ; profi attrs (both banks)
 claloop
-    DUP 16
+    DUP 32
 	push	de
     EDUP
     djnz	claloop ; 256 times
-
-    ld	b,c ; 0
-    ld	sp,#e000 + 8192 ; profi attr odd
-claloop2:
-    DUP 16
-	push	de
-    EDUP
-    djnz	claloop2 ; 256 times
-
     ld	sp,hl
 
-    xor a
-    call changeBank
-    xor a
-    call changeBankHiProfi
+    xor a : call changeBank
+    xor a : call changeBankHiProfi
     
     ei
     ret
