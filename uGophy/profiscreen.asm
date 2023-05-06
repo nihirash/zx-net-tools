@@ -1,6 +1,13 @@
-; Timex screen routines
+; Profi (512x240) screen routines
+;
+; Public definitions:
+; clearScreen
+; showCursor
+; hideCursor
+; putC
+; gotoXY
 
-SCREEN_ROWS = 20
+SCREEN_ROWS = 28
 
 showCursor:
 hideCursor:
@@ -14,7 +21,8 @@ ilp
 	push bc
 	push de
 	call findAddr
-    ld a, 7
+    ld a, 6
+    ld b, #80
     call changeBank
 	
 	ld b, 8
@@ -64,7 +72,7 @@ putC:
 
 	push bc
 
-    ld a, 7
+    ld a, 6
     call changeBank
 
 	call findAddr
@@ -95,9 +103,9 @@ findAddr:
     ld a, e
     srl a
     ld e, a
-    ld hl, #A000
-    jr c, fa1
     ld hl, #8000
+    jr c, fa1
+    ld hl, #A000
 fa1:		   
     LD A,D
     AND 7
@@ -116,68 +124,40 @@ fa1:
 
 clearScreen:
 
-    ld a, 7
-    call changeBank
-
-    ld c, #ff
-    ld a, #3E
-    out (c), a
-
+    ld a, 6 : call changeBank ; RAM06
+    xor a : call changeBankHiProfi
+    ld a, #ff : out (#fe), a ; black border (inversed on profi screen)
 
     di
-    ld	hl,0
-    ld	d,h
-    ld	e,h
-    ld	b,h
-    ld	c,b
+    ld hl,0 : ld d,h : ld e,h : ld b,h :ld c,b
     add	hl,sp
-    ld	sp,#c000 + 6144
+    ld	sp, 0 ; #c000 + 16384 ; profi pixels (both banks)
 clgloop
+    DUP 32
 	push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    djnz	clgloop
-
-    ld	b,c
-    ld	sp,#e000 + 6144
-clgloop2:
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    push	de
-    push	de
-    push	de
-    push	de
-
-    djnz	clgloop2
-
+    EDUP
+    djnz	clgloop ; 256 times
     ld	sp,hl
 
-    xor a
-    call changeBank
+    ; RAM 3A = 111 dffd, 010 7ffd
+    ld a, 2 : call changeBank
+    ld a, 7 :call changeBankHiProfi
+
+    ld hl,0 : ld d,#47 : ld e,#47 : ld b,h :ld c,b ; #47 = white on black
+    add	hl,sp
+    ld sp, 0 ; #c000 + 16384 ; profi attrs (both banks)
+claloop
+    DUP 32
+	push	de
+    EDUP
+    djnz	claloop ; 256 times
+    ld	sp,hl
+
+    xor a : call changeBank
+    xor a : call changeBankHiProfi
     
     ei
     ret
-
 
 coords dw 0
 attr_screen db 0 ; just for compatibility

@@ -99,7 +99,11 @@ wsLp  halt : djnz wsLp
     IFDEF TIMEXSCR
     include "tscreen.asm"
     ELSE
+    IFDEF PROFISCR
+    include "profiscreen.asm"
+    ELSE
     include "screen64.asm"
+    ENDIF
     ENDIF
     include "keyboard.asm"
     include "utils.asm"
@@ -123,6 +127,11 @@ wsLp  halt : djnz wsLp
     
     IFDEF UNO
     include "uno-uart.asm"
+    include "wifi.asm"
+    ENDIF
+
+    IFDEF ZIFI
+    include "zifi-uart.asm"
     include "wifi.asm"
     ENDIF
 
@@ -174,4 +183,7 @@ eop equ $
     SAVETAP "ugoph.tap", Start
 
     SAVEHOB "ugoph.$c", "ugoph.C", Start, $ - Start
-    
+
+    IFDEF DEBUG
+    SAVESNA "ugoph.sna", Start
+    ENDIF

@@ -4,7 +4,13 @@ start:
     di
     ld sp, start - 1
     res 4, (iy+1)
+
+    IFDEF TRDOS 
+    xor a : ld (#5c6a), a  ; Thank you, Mario Prato, for feedback
+    out (#fe), a : call changeBank
+    ELSE 
     xor a : out (#fe), a : call changeBank
+    ENDIF
 
     call clearScreen
     ld hl, initing : call putStringZ
@@ -119,6 +125,15 @@ selectItem:
     call fclose
     ENDIF
 
+    IFDEF TRDOS
+    ; trdos version stores wifi config into the esp flash
+    ld hl, cmd_ap1 : call uartWriteStringZ
+    ld hl, ssid : call uartWriteStringZ 
+    ld hl, cmd_ap2 : call uartWriteStringZ
+    ld hl, pass : call uartWriteStringZ
+    ld hl, cmd_ap3 : call okErrCmd
+    ENDIF
+
     ld b, 2 : ld c, 0 : call gotoXY
     ld hl, allDone : call putStringZ
 
@@ -222,6 +237,10 @@ getNetwork db 13, 10, "AT+CWLAP", 13, 10, 0
     include "uno-uart.asm"
     ENDIF
 
+    IFDEF ZIFI
+    include "zifi-uart.asm"
+    ENDIF
+
     include "utils.asm"
     include "ring.asm"
     include "wifi.asm"
@@ -242,4 +261,8 @@ buffer db 0
     
     IFDEF ESXDOS
     savetap "netman.tap", start
+    ENDIF
+
+    IFDEF TRDOS
+    savehob "netman.$c", "netman.C", start, $ - start
     ENDIF

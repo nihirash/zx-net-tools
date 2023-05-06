@@ -11,8 +11,19 @@ checkHighMem:
 
 ; A - memory bank
 changeBank:
-    ld bc, #7ffd : or #18 : out (c), a : ld (bankm), a
+    push af : ld bc, #7ffd : and #7 : or #18 : out (c), a: ld (bankm), a : pop af
     ret
+
+    IFDEF PROFISCR
+changeBankHiProfi:
+    push af : ld bc, #dffd : and #7 : or #80 : out (c), a : pop af 
+    ret
+
+changeBankHiSpectrum:
+    push af : ld bc, #dffd : and #7 : out (c), a : pop af 
+    ret
+    ENDIF
+
     ENDIF
 
     IFNDEF SPECTRANET 

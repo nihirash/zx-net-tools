@@ -64,6 +64,10 @@ cmd_inf_off defb "AT+CIPDINFO=0",13,10,0            ; doesn't send me info about
 
 crlf        defb 13,10, 0
 
+cmd_ap1     defb "AT+CWJAP_DEF=", #22, 0
+cmd_ap2     defb #22, ",", #22, 0
+cmd_ap3     defb #22, 13, 10, 0
+
 response_rdy    defb 'ready', 0
 response_ok     defb 'OK', 13, 10, 0      ; Sucessful operation
 response_err    defb 13,10,'ERROR',13,10,0      ; Failed operation

@@ -173,14 +173,14 @@ dwnEnd:
 openURI:
     call cleanIBuff 
     
-    ld b, 19: ld c, 0 :call gotoXY : ld hl, cleanLine : call printZ64
-    ld b, 19: ld c, 0 : call gotoXY : ld hl, hostTxt : call printZ64
+    ld b, SCREEN_ROWS-1 : ld c, 0 :call gotoXY : ld hl, cleanLine : call printZ64
+    ld b, SCREEN_ROWS-1 : ld c, 0 : call gotoXY : ld hl, hostTxt : call printZ64
 
     call input
 
     ld a, (iBuff) : or a : jp z, backToPage
 
-    ld b, 19 : ld c, 0 : call gotoXY : ld hl, cleanLine : call printZ64
+    ld b, SCREEN_ROWS-1 : ld c, 0 : call gotoXY : ld hl, cleanLine : call printZ64
 
     ld hl, iBuff : ld de, d_host : ld bc, 65 : ldir
 

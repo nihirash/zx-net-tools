@@ -45,21 +45,21 @@ pageCursorUp:
 pageCursorDown:
     ld a, (cursor_pos)
     inc a
-    cp 21 : jp z, pageScrollDn
+    cp SCREEN_ROWS+1 : jp z, pageScrollDn
 
     push af : call hideCursor : pop af : ld (cursor_pos), a : call showCursor
     jp showLp
 
 pageScrollDn:
-    ld hl, (show_offset) : ld de, 20 : add hl, de : ld (show_offset), hl
+    ld hl, (show_offset) : ld de, SCREEN_ROWS : add hl, de : ld (show_offset), hl
     ld a, 1 : ld (cursor_pos), a
     
     jp backToPage
 
 pageScrollUp:
     ld a, (show_offset) : and a : jp z, showLp
-    ld hl, (show_offset) : ld de, 20 : sub hl, de : ld (show_offset), hl
-    ld a, 20 : ld (cursor_pos), a
+    ld hl, (show_offset) : ld de, SCREEN_ROWS : sub hl, de : ld (show_offset), hl
+    ld a, SCREEN_ROWS : ld (cursor_pos), a
 
     jp backToPage
 
@@ -173,6 +173,9 @@ loadImage:
 	
     IFNDEF ZX48
     ld a, 7 : call changeBank
+    IFDEF PROFISCR
+    xor a : call changeBankHiSpectrum
+    ENDIF
     ld hl, #c000
     ELSE 
     ld hl, #4000
@@ -183,6 +186,10 @@ loadImage:
     xor a 
     
     IFDEF UNO
+    out (#ff), a
+    ENDIF
+
+    IFDEF ZIFI
     out (#ff), a
     ENDIF
 
@@ -237,11 +244,11 @@ songEnded:
     ld hl, (offset_tmp) : ld (show_offset), hl
     ENDIF 
 startNext:
-    ld a, (cursor_pos) : inc a : cp 21 : jr z, playNxtPg : ld (cursor_pos), a
+    ld a, (cursor_pos) : inc a : cp SCREEN_ROWS+1 : jr z, playNxtPg : ld (cursor_pos), a
 
     jr playContinue
 playNxtPg:
-    ld a, (show_offset) : add 20 : ld (show_offset), a : ld a, 1 : ld (cursor_pos), a
+    ld a, (show_offset) : add SCREEN_ROWS : ld (show_offset), a : ld a, 1 : ld (cursor_pos), a
 playContinue:
     call renderScreen : call showCursor
     IFNDEF ZX48
@@ -325,8 +332,8 @@ showTypeUnknown:
 showTypePrint:
     push hl
     
-    ld b, 21 : ld c, 0 : call gotoXY : ld hl, cleanLine : call printZ64
-    ld b, 21 : ld c, 0 : call gotoXY : pop hl : jp printZ64
+    ld b, SCREEN_ROWS+1 : ld c, 0 : call gotoXY : ld hl, cleanLine : call printZ64
+    ld b, SCREEN_ROWS+1 : ld c, 0 : call gotoXY : pop hl : jp printZ64
 
 renderHeader:
     call clearScreen
@@ -342,16 +349,20 @@ renderHeader:
     ld d,0 : call inverseLine
     ENDIF
 
+    IFDEF PROFISCR
+    ld d,0 : call inverseLine
+    ENDIF
+
     ld a, #07
     ld (attr_screen), a
     ret
 
 renderScreen:
     call renderHeader 
-    ld b, 20
+    ld b, SCREEN_ROWS
 renderLp:
     push bc
-    ld a, 20 : sub b : ld b, a : ld a, (show_offset) : add b : ld b, a 
+    ld a, SCREEN_ROWS : sub b : ld b, a : ld a, (show_offset) : add b : ld b, a 
     call renderLine
     pop bc
     djnz renderLp
